@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tech World</title>
+  <style>
+    :root{
+      --bg1:#0b0f14;
+      --bg2:#88c7ff;
+      --bg3:#152030;
+      --text:#eaf2ff;
+      --muted:#a9bfd6;
+      --accent:#4aa3ff;
+      --accent-2:#1e6ce0;
+      --danger:#ff4d6d;
+      --ok:#22c55e;
+      --border:#24425f;
+      --shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+    html, body {
+      height: 100%;
+      background: linear-gradient(135deg, var(--bg1) 0%, #0e1622 40%, var(--bg2) 140%);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      margin:0;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+    header {
+      position: sticky; top: 0;
+      background: rgba(0,0,0,.6);
+      border-bottom: 1px solid rgba(136,199,255,.2);
+    }
+    nav { display:flex; gap:16px; flex-wrap:wrap; }
+    nav a { color:white; text-decoration:none; }
+
+    .card {
+      background: rgba(21,32,48,.8);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-top:20px;
+    }
+    .card-inner { padding: 20px; }
+
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap:15px;
+    }
+
+    .product { border:1px solid var(--border); border-radius:10px; }
+    .info { padding:10px; }
+    .btn {
+      padding:10px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:#1e293b;
+      color:white;
+      cursor:pointer;
+    }
+    .btn.primary { background:#1e6ce0; }
+
+    .cart-row {
+      display:flex;
+      justify-content:space-between;
+      margin:5px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🛒 Super Market</h2>
+
+<div class="grid">
+
+<div class="product">
+<div class="info">
+<h3>Milk</h3>
+<p>$10</p>
+<input type="checkbox" id="p1"> Buy
+</div>
+</div>
+
+<div class="product">
+<div class="info">
+<h3>Bread</h3>
+<p>$5</p>
+<input type="checkbox" id="p2"> Buy
+</div>
+</div>
+
+<div class="product">
+<div class="info">
+<h3>Eggs</h3>
+<p>$8</p>
+<input type="checkbox" id="p3"> Buy
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<div class="card-inner">
+<h3>Cart</h3>
+
+<div id="cart"></div>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-inner">
+
+<h3>Order Details</h3>
+
+<input id="name" placeholder="Name" class="btn" style="width:100%;margin:5px 0;">
+<input id="phone" placeholder="Phone" class="btn" style="width:100%;margin:5px 0;">
+<input id="address" placeholder="Address" class="btn" style="width:100%;margin:5px 0;">
+
+<select id="payment" class="btn" style="width:100%;margin:5px 0;">
+<option value="">Payment</option>
+<option>Cash</option>
+<option>InstaPay</option>
+</select>
+
+<button onclick="order()" class="btn primary" style="width:100%;">Place Order</button>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+function getProducts(){
+let arr=[];
+if(p1.checked) arr.push("Milk");
+if(p2.checked) arr.push("Bread");
+if(p3.checked) arr.push("Eggs");
+return arr;
+}
+
+function order(){
+
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+let address=document.getElementById("address").value;
+let payment=document.getElementById("payment").value;
+let products=getProducts();
+
+if(!name||!phone||!address||!payment||products.length==0){
+alert("Fill all data");
+return;
+}
+
+let data={
+name,phone,address,payment,products
+};
+
+let all=JSON.parse(localStorage.getItem("orders"))||[];
+all.push(data);
+localStorage.setItem("orders",JSON.stringify(all));
+
+alert("Order Done ✅");
+
+}
+
+</script>
+
+</body>
+</html>
