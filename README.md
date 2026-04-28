@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candy Market</title>
+
+<style>
+:root{
+  --bg1:#0b0f14;
+  --bg2:#88c7ff;
+  --text:#eaf2ff;
+  --accent:#1e6ce0;
+  --border:#24425f;
+}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  color:var(--text);
+  background:linear-gradient(135deg,var(--bg1),#0e1622,var(--bg2));
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.btn{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#1e293b;
+  color:white;
+  cursor:pointer;
+  margin-top:5px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.card{
+  background:rgba(21,32,48,.8);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px;
+}
+
+.sticky-cart{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#0e1622;
+  border-top:2px solid var(--border);
+  padding:10px;
+}
+
+.sticky-cart button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:var(--accent);
+  color:white;
+  font-size:16px;
+}
+
+@media(max-width:768px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:480px){
+  .grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="topbar">
+  <h2 id="title">🛒 Candy Market</h2>
+  <button class="btn" onclick="toggleLang()">AR / EN</button>
+</div>
+
+<!-- Products -->
+<div class="grid">
+
+<div class="card">
+  <h3 data-en="Lays Chips" data-ar="شيبسي ليز">Lays Chips</h3>
+  <p>20 EGP</p>
+  <input type="checkbox" class="check" data-name-en="Lays Chips" data-name-ar="شيبسي ليز" data-price="20" onchange="updateCart()">
+</div>
+
+<div class="card">
+  <h3 data-en="Pepsi" data-ar="بيبسي">Pepsi</h3>
+  <p>15 EGP</p>
+  <input type="checkbox" class="check" data-name-en="Pepsi" data-name-ar="بيبسي" data-price="15" onchange="updateCart()">
+</div>
+
+<div class="card">
+  <h3 data-en="KitKat" data-ar="كيت كات">KitKat</h3>
+  <p>10 EGP</p>
+  <input type="checkbox" class="check" data-name-en="KitKat" data-name-ar="كيت كات" data-price="10" onchange="updateCart()">
+</div>
+
+</div>
+
+<!-- Cart -->
+<div class="card" style="margin-top:20px;">
+  <h3>Cart</h3>
+  <div id="cart"></div>
+</div>
+
+<!-- Order -->
+<div class="card" style="margin-top:20px;">
+  <h3>Order Details</h3>
+
+  <input id="name" class="btn" placeholder="Name">
+  <input id="phone" class="btn" placeholder="Phone" maxlength="11"
+    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+  <input id="address" class="btn" placeholder="Address">
+
+  <select id="payment" class="btn">
+    <option value="">Payment Method</option>
+    <option>Cash</option>
+    <option>InstaPay</option>
+  </select>
+</div>
+
+</div>
+
+<!-- WhatsApp -->
+<div class="sticky-cart">
+  <button onclick="sendWhatsApp()">Order via WhatsApp</button>
+</div>
+
+<script>
+
+let lang="en";
+let delivery=30;
+
+/* Toggle Language */
+function toggleLang(){
+  lang = lang==="en"?"ar":"en";
+
+  document.querySelectorAll("h3[data-en]").forEach(el=>{
+    el.innerText = el.getAttribute("data-"+lang);
+  });
+
+  document.getElementById("name").placeholder = lang==="en"?"Name":"الاسم";
+  document.getElementById("phone").placeholder = lang==="en"?"Phone":"الموبايل";
+  document.getElementById("address").placeholder = lang==="en"?"Address":"العنوان";
+}
+
+/* Cart */
+function updateCart(){
+  let cart=document.getElementById("cart");
+  cart.innerHTML="";
+  let total=0;
+
+  document.querySelectorAll(".check:checked").forEach(item=>{
+    let name=item.getAttribute("data-name-"+lang);
+    let price=parseInt(item.dataset.price);
+
+    cart.innerHTML+=`<p>${name} - ${price} EGP</p>`;
+    total+=price;
+  });
+
+  if(total>0){
+    cart.innerHTML+=`<p>Delivery: ${delivery} EGP</p>`;
+    total+=delivery;
+  }
+
+  cart.innerHTML+=`<hr><b>Total: ${total} EGP</b>`;
+}
+
+/* 🔥 FIXED WhatsApp (important) */
+function sendWhatsApp(){
+
+  let name=document.getElementById("name").value.trim();
+  let phone=document.getElementById("phone").value.trim();
+  let address=document.getElementById("address").value.trim();
+  let payment=document.getElementById("payment").value;
+
+  let products=[];
+  document.querySelectorAll(".check:checked").forEach(item=>{
+    products.push(item.getAttribute("data-name-"+lang));
+  });
+
+  if(phone.length!==11){
+    alert(lang==="en"?"Phone must be 11 digits":"رقم الموبايل لازم 11 رقم");
+    return;
+  }
+
+  if(!name || !phone || !address || !payment || products.length===0){
+    alert(lang==="en"?"Fill all data":"املأ كل البيانات");
+    return;
+  }
+
+  // 🔥 FIX: clean + structured message (no cut)
+  let msg =
+`🛒 NEW ORDER
+--------------------
+👤 Name: ${name}
+📞 Phone: ${phone}
+📍 Address: ${address}
+💳 Payment: ${payment}
+
+🛍 Products:
+${products.map(p => "• " + p).join("\n")}
+--------------------
+🚚 Delivery: ${delivery} EGP`;
+
+  let number="201551622780";
+
+  window.open("https://wa.me/"+number+"?text="+encodeURIComponent(msg));
+}
+
+</script>
+
+</body>
+</html>
